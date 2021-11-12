@@ -1,9 +1,18 @@
 const router = require('express').Router();
-const User = require('../users/users-model.js');
+const bcrypt = require('bcryptjs');
 const mw = require('./auth-middleware.js');
+
+const User = require('../users/users-model.js');
 
 router.post('/register', mw.validRegistration, (req, res, next) => {
   let user = req.body;
+  //bcrypt the password now
+  const rounds = process.env.BCRYPT_ROUNDS || 8;
+  const hash = bcrypt.hashSync(user.password, rounds);
+  
+  user.password = hash;
+
+
   User.add(user)
     .then(newUser => {
       res.status(201).json({message: `Welcome, ${newUser.username}~`});
