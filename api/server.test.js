@@ -8,7 +8,7 @@ beforeAll( async () => {
 });
 
 beforeEach( async () => {
-  await db.seed.run()
+  // await db.seed.run()
 });
 
 afterAll( async () => {
@@ -17,11 +17,33 @@ afterAll( async () => {
 
 test('sanity', () => {
   expect(true).toBe(true)
-})
+});
 
 describe('[POST] /auth/auth-router', () => {
-  test('/register responds with correct errors', async () => {
-    const res = await request(server).post('/api/auth')
-    expect(res.status).toBe(200);
-  })
-})
+  describe('error checks', () => {
+    test('/register responds with correct errors', async () => {
+      const res = await request(server).post('/api/auth/register')
+      expect(res.status).toBe(400)
+      expect(res.body).toMatchObject({ message: "username and password required" })
+    })
+
+    test('/register responds with errors for missing fields', async () => {
+      const res = await request(server)
+        .post('/api/auth/register')
+        .send({ username: "", password: "" })
+      expect(res.status).toBe(400)
+      expect(res.body).toMatchObject({ message: "username and password required" })
+    })  
+  });
+
+  describe('registration succeeds', () => {
+    test('/register responds correct welcome message upon successful registration', async () => {
+      const res = await request(server)
+        .post('/api/auth/register')
+        .send({ username: "foobiscuit", password: "foo12" })
+      expect(res.status).toBe(201)
+      expect(res.body).toMatchObject({ message: "Welcome, foobiscuit~" })
+    })  
+  });
+
+});

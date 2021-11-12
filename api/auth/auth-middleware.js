@@ -22,7 +22,7 @@ function validCredentials (req, res, next) {
 
 async function isUsernameTaken (req, res, next) {
     const usernameCheck = await User.findBy(req.body.username)
-    if(usernameCheck) {
+    if(usernameCheck.length > 0) {
         next({ status: 401, message: "username taken"})
     } else {
         next()
