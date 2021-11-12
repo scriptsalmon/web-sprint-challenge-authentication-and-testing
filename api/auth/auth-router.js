@@ -54,11 +54,10 @@ router.post('/login', mw.validCredentials, (req, res, next) => {
     .then(([usr]) => {
       if (usr && bcrypt.compareSync(password, usr.password)) {
         const token = tokenBuilder(usr)
-        res.status(200).json(`Welcome back ${usr.username}`, token)
+        res.status(200).json({message: `Welcome back ${usr.username}`, token})
       } else {
         next({ status: 401, message: "Invalid Credentials"})
       }
-      
     })
   /*
     IMPLEMENT
