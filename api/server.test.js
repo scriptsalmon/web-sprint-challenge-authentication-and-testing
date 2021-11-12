@@ -48,12 +48,24 @@ describe('[POST] /auth/register', () => {
 });
 
 describe('[POST] /auth/login', () => {
-  test('/login responds with correct errors', async () => {
-    const res = await request(server)
-      .post('/api/auth/login')
-      .send({ username: "notYou", password: "denied1"})
-    expect(res.status).toBe(401);
-    expect(res.body).toMatchObject({ name: "yo" })
+  describe('error checks', () => {
+    test('/login responds with correct errors', async () => {
+      const res = await request(server)
+        .post('/api/auth/login')
+        .send({ username: "notYou", password: "denied1"})
+      expect(res.status).toBe(401);
+      expect(res.body).toMatchObject({ message: "Invalid Credentials" })
+    });
   })
 
-})
+  describe('happy path checks', () => {
+    test('/login responds with proper welcome message', async () => {
+      const res = await request(server)
+        .post('/api/auth/login')
+        .send({ username: "foobar", password: "foo12" })
+      expect(res.status).toBe(200)
+      expect(res.body).toMatchObject({ message: `Welcome back foobar` })
+    })
+  });
+
+});
