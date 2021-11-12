@@ -9,7 +9,7 @@
     "rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
     "test": "cross-env NODE_ENV=testing jest --verbose --runInBand --silent",
-    "resetdb": "npm rollback && npm migrate && npm run seed"
+    "resetdb": "npm run rollback && npm run migrate"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@types/jest": "27.0.2",
     "cross-env": "7.0.3",
+    "dotenv": "^10.0.0",
     "eslint": "8.0.1",
     "jest": "27.3.1",
     "nodemon": "2.0.14",

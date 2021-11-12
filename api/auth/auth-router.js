@@ -1,8 +1,15 @@
 const router = require('express').Router();
+const User = require('../users/users-model.js');
 
 router.post('/register', (req, res, next) => {
-  
-  next()
+  let user = req.body;
+  User.add(user)
+    .then(newUser => {
+      res.status(201).json({
+        message: `Welcome, ${newUser}~`
+    })
+    .catch(next);
+    });
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
