@@ -1,10 +1,11 @@
 const bcrypt = require('bcryptjs');
+const tokenBuilder = require('./token-builder');
 const router = require('express').Router();
 const mw = require('./auth-middleware.js');
 
 const User = require('../users/users-model.js');
 
-router.post('/register', mw.validRegistration, mw.isUsernameTaken, (req, res, next) => {
+router.post('/register', mw.validCredentials, mw.isUsernameTaken, (req, res, next) => {
   let user = req.body;
   //bcrypt the password now
   const rounds = process.env.BCRYPT_ROUNDS || 8;
@@ -15,8 +16,7 @@ router.post('/register', mw.validRegistration, mw.isUsernameTaken, (req, res, ne
   User.add(user)
     .then(newUser => {
       res.status(201).json({
-        message: `Welcome, ${newUser.user_id} ${newUser.username} ${newUser.password}~`
-      });
+        message: `Welcome, ${newUser.username}~`});
     })
     .catch(next);
     });
@@ -46,8 +46,20 @@ router.post('/register', mw.validRegistration, mw.isUsernameTaken, (req, res, ne
       the response body should include a string exactly as follows: "username taken".
   */
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', mw.validCredentials, (req, res, next) => {
+  let { username, password } = req.body;
+  // check pass with bcrypt compareSync
+  // create token
+  User.findBy(username)
+    .then(([usr]) => {
+      if (usr && bcrypt.compareSync(password, usr.password)) {
+        const token = tokenBuilder(usr)
+        res.status(200).json(`Welcome back ${usr.username}`, token)
+      } else {
+        next({ status: 401, message: "Invalid Credentials"})
+      }
+      
+    })
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
