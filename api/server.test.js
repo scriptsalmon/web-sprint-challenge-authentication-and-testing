@@ -8,7 +8,7 @@ beforeAll( async () => {
 });
 
 beforeEach( async () => {
-  // await db.seed.run()
+  await db.seed.run()
 });
 
 afterAll( async () => {
@@ -19,7 +19,7 @@ test('sanity', () => {
   expect(true).toBe(true)
 });
 
-describe('[POST] /auth/auth-router', () => {
+describe('[POST] /auth/register', () => {
   describe('error checks', () => {
     test('/register responds with correct errors', async () => {
       const res = await request(server).post('/api/auth/register')
@@ -37,7 +37,7 @@ describe('[POST] /auth/auth-router', () => {
   });
 
   describe('registration succeeds', () => {
-    test('/register responds correct welcome message upon successful registration', async () => {
+    test('/register responds correct welcome message', async () => {
       const res = await request(server)
         .post('/api/auth/register')
         .send({ username: "foobiscuit", password: "foo12" })
@@ -45,5 +45,15 @@ describe('[POST] /auth/auth-router', () => {
       expect(res.body).toMatchObject({ message: "Welcome, foobiscuit~" })
     })  
   });
-
 });
+
+describe('[POST] /auth/login', () => {
+  test('/login responds with correct errors', async () => {
+    const res = await request(server)
+      .post('/api/auth/login')
+      .send({ username: "notYou", password: "denied1"})
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({ name: "yo" })
+  })
+
+})
