@@ -1,12 +1,12 @@
 const router = require('express').Router();
 const User = require('../users/users-model.js');
+const mw = require('./auth-middleware.js');
 
-router.post('/register', (req, res, next) => {
+router.post('/register', mw.validRegistration, (req, res, next) => {
   let user = req.body;
   User.add(user)
     .then(newUser => {
-      res.status(201).json({
-        message: `Welcome, ${newUser}~`
+      res.status(201).json({message: `Welcome, ${newUser.username}~`});
     })
     .catch(next);
     });
@@ -35,7 +35,6 @@ router.post('/register', (req, res, next) => {
     4- On FAILED registration due to the `username` being taken,
       the response body should include a string exactly as follows: "username taken".
   */
-});
 
 router.post('/login', (req, res) => {
   res.end('implement login, please!');
